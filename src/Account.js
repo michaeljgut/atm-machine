@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import './Account.css';
 
 class Account extends Component {
   constructor() {
@@ -21,6 +22,10 @@ class Account extends Component {
 
   handleWithdraw(event) {
     event.preventDefault();
+    const newBalance = this.state.balance - this.state.inputValue;
+    if (newBalance < 0){
+      alert('Insufficient funds!');
+    }
     this.setState((prevState) =>{
       return {balance: prevState.balance - this.state.inputValue};
     })
@@ -29,16 +34,34 @@ class Account extends Component {
 
   handleValue(event) {
     event.preventDefault();
+    if (event.target.value === '-'){
+      alert('Cannot have a negative number!');
+      return;
+    }
+    const regex = /[^0-9]/g;
+    if (regex.test(event.target.value)) {
+      alert('Invalid number');
+      return;
+    }
     this.setState({
       inputValue: Number(event.target.value)
     })
   }
 
+  addClass() {
+    if (this.state.balance === 0)
+      return 'balance zero';
+    else
+      return 'balance';
+  }
+
   render() {
     return (
-      <div>
+      <div >
         <h2>{this.props.name}</h2>
-        <h3>{this.state.balance}</h3>
+        <div className={this.addClass()}>
+          <h3>{this.state.balance}</h3>
+        </div>
         <input value={this.state.inputBalance} onChange={this.handleValue}/>
         <button onClick={this.handleDeposit}>Deposit</button>
         <button onClick={this.handleWithdraw}>Withdraw</button>
