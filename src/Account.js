@@ -18,6 +18,7 @@ class Account extends Component {
     this.setState((prevState) =>{
       return {balance: prevState.balance + this.state.inputValue};
     })
+    this.setState({inputValue: 0});
   }
 
   handleWithdraw(event) {
@@ -25,27 +26,27 @@ class Account extends Component {
     const newBalance = this.state.balance - this.state.inputValue;
     if (newBalance < 0){
       alert('Insufficient funds!');
+    } else {
+      this.setState((prevState) =>{
+        return {balance: prevState.balance - this.state.inputValue};
+      })
     }
-    this.setState((prevState) =>{
-      return {balance: prevState.balance - this.state.inputValue};
-    })
-
   }
 
   handleValue(event) {
     event.preventDefault();
-    if (event.target.value === '-'){
-      alert('Cannot have a negative number!');
-      return;
-    }
-    const regex = /[^0-9]/g;
-    if (regex.test(event.target.value)) {
+    const num = parseFloat(event.target.value);
+    if (isNaN(num) || (typeof num !== 'number') || num < 0) {
       alert('Invalid number');
-      return;
+      this.setState({
+        inputValue: event.target.value.substr(0,event.target.value.length - 1)
+      })
+    } else {
+      const tempNum = num * 100
+      this.setState({
+        inputValue: Math.round(tempNum)/100
+      })
     }
-    this.setState({
-      inputValue: Number(event.target.value)
-    })
   }
 
   addClass() {
@@ -62,7 +63,7 @@ class Account extends Component {
         <div className={this.addClass()}>
           <h3>{this.state.balance}</h3>
         </div>
-        <input value={this.state.inputBalance} onChange={this.handleValue}/>
+        <input min="0" onChange={this.handleValue}/>
         <button onClick={this.handleDeposit}>Deposit</button>
         <button onClick={this.handleWithdraw}>Withdraw</button>
       </div>
